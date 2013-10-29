@@ -1,0 +1,41 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*- ex:set ts=4 sw=4:
+
+import os
+import sys
+import Image
+from flask import Flask, render_template, safe_join, send_from_directory
+
+app = Flask(__name__, instance_path=os.path.abspath(sys.argv[1]))
+
+cache_dir = os.path.join(app.instance_path, 'cache')
+gallery_dir = os.path.join(app.instance_path, 'gallery')
+
+
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory(os.path.join(app.instance_path, 'static'), filename)
+
+@app.route('/image/<path:filename>_<int:size>.jpg')
+def serve_image(filename, size):
+    orig_path = safe_join(gallery_dir, filename + '.jpg')
+    cache_path = safe_join(cache_dir, filename + '_%d.jpg' % size)
+
+    if not os.path.exists(cache_path) or os.stat(cache_path).st_mtime < os.stat(orig_path).st_mtime:
+        img = Image.open(orig_path)
+        img.thumbnail((size, size), Image.ANTIALIAS)
+        img.save(cache_path, 'JPEG')
+
+    return send_from_directory (cache_dir, filename + '_%d.jpg' % size)
+
+@app.route('/image/<path:filename>.html')
+def serve_image_wrapper(filename):
+    return render_template('image_wrapper.html', filename=filename)
+
+@app.route('/')
+def serve_index():
+    return render_template('index.html', files=[os.path.splitext(f)[0] for f in os.listdir(gallery_dir)])
+
+if __name__ == '__main__':
+    app.debug = True
+    app.run()
