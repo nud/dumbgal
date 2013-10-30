@@ -1,10 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*- ex:set ts=4 sw=4:
 
 import os
 import sys
-import Image
 from flask import Flask, render_template, safe_join, send_from_directory
+from PIL import Image
 
 app = Flask(__name__, instance_path=os.path.abspath(sys.argv[1]))
 
