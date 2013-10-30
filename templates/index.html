@@ -10,7 +10,7 @@
   {% endif %}
   <ul>
     {% for file in files %}
-      <li><a href="/image/{{ file }}"><img src="/image/{{ file }}_h300.jpg"></a></li>
+      <li><a href="{{ url_for('image_pages', filename=file) }}"><img src="{{ url_for('images', filename=file, size=300, mode='h') }}" alt=""></a></li>
     {% endfor %}
   </ul>
 {% endblock %}

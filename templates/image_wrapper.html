@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
 {% block body %}
   <div id="box">
-    <img class="big" src="/image/{{ filename }}_2000.jpg">
+    <img class="big" src="{{ url_for('images', filename=filename, size=2000, mode='') }}">
   </div>
   {% if tags %}
     <ul>
       {% for tag in tags %}
-        <li>{{ tag }}</li>
+        <li><a href="{{ url_for('tag_pages', tag=tag) }}">{{ tag }}</a></li>
       {% endfor %}
     </ul>
   {% endif %}

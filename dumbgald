@@ -31,7 +31,7 @@ def static_files(filename):
     return send_from_directory(os.path.join(app.instance_path, 'static'), filename)
 
 @app.route('/image/<path:filename>_<any(h,w,""):mode><int:size>.jpg')
-def serve_image(filename, mode, size):
+def images(filename, size, mode):
     orig_path = safe_join(gallery_dir, filename + '.jpg')
     cache_path = safe_join(cache_dir, filename + '_%s%d.jpg' % (mode, size))
 
@@ -51,7 +51,7 @@ def serve_image(filename, mode, size):
     return send_from_directory (cache_dir, filename + '_%s%d.jpg' % (mode, size))
 
 @app.route('/image/<path:filename>')
-def serve_image_wrapper(filename):
+def image_pages(filename):
     cur = get_db().cursor()
     cur.execute("""SELECT t.name
                    FROM tags t
