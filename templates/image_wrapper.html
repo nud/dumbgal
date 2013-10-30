@@ -1,5 +1,13 @@
-<html>
-<body>
-<img src="/image/{{ filename }}_2000.jpg">
-</body>
-</html>
+{% extends "layout.html" %}
+{% block body %}
+  <div id="box">
+    <img class="big" src="/image/{{ filename }}_2000.jpg">
+  </div>
+  {% if tags %}
+    <ul>
+      {% for tag in tags %}
+        <li>{{ tag }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}

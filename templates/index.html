@@ -1,5 +1,16 @@
-<ul>
-{% for file in files %}
-<li><a href="/image/{{ file }}.html"><img src="/image/{{ file }}_200.jpg"></a></li>
-{% endfor %}
-</ul>
+{% extends "layout.html" %}
+
+{% block body %}
+  {% if tags %}
+    <ul>
+      {% for tag in tags %}
+        <li><a href="{{ url_for('tag_pages', tag=tag) }}">{{ tag }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <ul>
+    {% for file in files %}
+      <li><a href="/image/{{ file }}"><img src="/image/{{ file }}_h300.jpg"></a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}

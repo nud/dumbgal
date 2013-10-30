@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*- ex:set ts=4 sw=4:
 
 import os
+import sqlite3
 import sys
 from flask import Flask, render_template, safe_join, send_from_directory
 from PIL import Image
@@ -10,10 +11,23 @@ app = Flask(__name__, instance_path=os.path.abspath(sys.argv[1]))
 
 cache_dir = os.path.join(app.instance_path, 'cache')
 gallery_dir = os.path.join(app.instance_path, 'gallery')
+db_filename = os.path.join(app.instance_path, 'meta.db')
 
+def get_db():
+    db = sqlite3.connect(db_filename)
+    cur = db.cursor()
+    cur.execute('pragma user_version');
+    if cur.fetchone()[0] < 1:
+        cur.execute('create table images (id integer primary key autoincrement, filename text unique, width integer, height integer)')
+        cur.execute('create table tags (id integer primary key autoincrement, name text unique)')
+        cur.execute('create table image_tags (image_id integer, tag_id integer, unique (image_id, tag_id))')
+        cur.execute('pragma user_version = 1')
+        db.commit()
+        cur.close()
+    return db
 
 @app.route('/static/<path:filename>')
-def serve_static(filename):
+def static_files(filename):
     return send_from_directory(os.path.join(app.instance_path, 'static'), filename)
 
 @app.route('/image/<path:filename>_<any(h,w,""):mode><int:size>.jpg')
@@ -36,13 +50,44 @@ def serve_image(filename, mode, size):
 
     return send_from_directory (cache_dir, filename + '_%s%d.jpg' % (mode, size))
 
-@app.route('/image/<path:filename>.html')
+@app.route('/image/<path:filename>')
 def serve_image_wrapper(filename):
-    return render_template('image_wrapper.html', filename=filename)
+    cur = get_db().cursor()
+    cur.execute("""SELECT t.name
+                   FROM tags t
+                   LEFT JOIN image_tags a ON t.id = a.tag_id
+                   LEFT JOIN images i ON i.id = a.image_id
+                   WHERE i.filename = ?
+                   ORDER BY t.name""", (filename,));
+    tags = [row[0] for row in cur]
+    cur.close()
+
+    return render_template('image_wrapper.html', filename=filename, tags=tags)
+
+@app.route('/tag/<tag>')
+def tag_pages(tag):
+    cur = get_db().cursor()
+    cur.execute("""SELECT i.filename
+                   FROM images i
+                   LEFT JOIN image_tags a ON i.id = a.image_id
+                   LEFT JOIN tags t ON t.id = a.tag_id
+                   WHERE t.name = ?
+                   ORDER BY i.filename""", (tag,));
+    files = [row[0] for row in cur]
+    cur.close()
+
+    return render_template('index.html', files=files, tags=[])
 
 @app.route('/')
 def serve_index():
-    return render_template('index.html', files=[os.path.splitext(f)[0] for f in os.listdir(gallery_dir)])
+    cur = get_db().cursor()
+    cur.execute("SELECT name FROM tags ORDER BY name")
+    tags = [row[0] for row in cur]
+    cur.close()
+
+    files = [os.path.splitext(f)[0] for f in os.listdir(gallery_dir)]
+
+    return render_template('index.html', files=files, tags=tags)
 
 if __name__ == '__main__':
     app.debug = True
