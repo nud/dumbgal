@@ -60,8 +60,9 @@ def tag_pages(tag):
 
 @app.route('/')
 def serve_index():
-    tags = get_store().list_all_tags()
-    files = [os.path.splitext(f)[0] for f in os.listdir(gallery_dir)]
+    store = get_store()
+    tags = store.list_all_tags()
+    files = store.list_all_images()
 
     return render_template('index.html', files=files, tags=tags)
 

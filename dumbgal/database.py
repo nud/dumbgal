@@ -50,5 +50,32 @@ class TagStore(object):
                               ORDER BY t.name""", (filename,))
         return [row[0] for row in results]
 
+    def add_image(self, filename, width, height):
+        cur = self.conn.cursor()
+        cur.execute('INSERT OR IGNORE INTO images (filename, width, height) VALUES (?, ?, ?)', (filename, width, height))
+        self.conn.commit()
+        cur.close()
+
+    def add_tag(self, filename, tag):
+        cur = self.conn.cursor()
+
+        cur.execute('SELECT id FROM images WHERE filename=?', (filename,))
+        row = cur.fetchone()
+        if row is None:
+            raise Exception('Image %s does not exist.' % filename)
+        image_id = row[0]
+
+        cur.execute('SELECT id FROM tags WHERE name=?', (tag,))
+        row = cur.fetchone()
+        if row is not None:
+            tag_id = row[0]
+        else:
+            cur.execute('INSERT INTO tags (name) VALUES (?)', (tag,))
+            tag_id = cur.lastrowid
+
+        cur.execute('INSERT INTO image_tags (image_id, tag_id) VALUES (?, ?)', (image_id, tag_id))
+        self.conn.commit()
+        cur.close()
+
     def close(self):
         self.conn.close()

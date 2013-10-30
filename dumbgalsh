@@ -1,0 +1,43 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*- ex:set ts=4 sw=4:
+
+import os
+import sys
+import argparse
+from PIL import Image
+
+from dumbgal.database import TagStore
+
+def get_argument_parser():
+    parser = argparse.ArgumentParser(prog="dumbgalsh", description="Dumb Gallery support tool")
+    parser.add_argument('-r', '--root', dest='root_dir', default='.', help='root data dir')
+
+    subparsers = parser.add_subparsers(help='subcommand')
+
+    subparser = subparsers.add_parser('scan')
+    subparser.set_defaults(cmd='scan')
+
+    subparser = subparsers.add_parser('tag')
+    subparser.set_defaults(cmd='tag')
+    subparser.add_argument('image', help='the image filename')
+    subparser.add_argument('tag', help='the tag name')
+
+    return parser
+
+
+args = get_argument_parser().parse_args(sys.argv[1:])
+
+store = TagStore(os.path.join(args.root_dir, 'meta.db'))
+existing_images = store.list_all_images()
+
+if args.cmd == 'scan':
+    for filename in os.listdir(os.path.join(args.root_dir, 'gallery')):
+        imgname = os.path.splitext(filename)[0]
+
+        img = Image.open(os.path.join(args.root_dir, 'gallery', filename))
+        store.add_image(imgname, img.size[0], img.size[1])
+        print("%s added." % imgname)
+
+elif args.cmd == 'tag':
+    store.add_tag(args.image, args.tag)
+    print("tag added.")
