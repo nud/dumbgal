@@ -16,17 +16,25 @@ gallery_dir = os.path.join(app.instance_path, 'gallery')
 def serve_static(filename):
     return send_from_directory(os.path.join(app.instance_path, 'static'), filename)
 
-@app.route('/image/<path:filename>_<int:size>.jpg')
-def serve_image(filename, size):
+@app.route('/image/<path:filename>_<any(h,w,""):mode><int:size>.jpg')
+def serve_image(filename, mode, size):
     orig_path = safe_join(gallery_dir, filename + '.jpg')
-    cache_path = safe_join(cache_dir, filename + '_%d.jpg' % size)
+    cache_path = safe_join(cache_dir, filename + '_%s%d.jpg' % (mode, size))
 
     if not os.path.exists(cache_path) or os.stat(cache_path).st_mtime < os.stat(orig_path).st_mtime:
         img = Image.open(orig_path)
-        img.thumbnail((size, size), Image.ANTIALIAS)
+
+        if mode == 'h':
+            t = (img.size[0], size)
+        elif mode == 'w':
+            t = (size, img.size[1])
+        else:
+            t = (size, size)
+
+        img.thumbnail(t, Image.ANTIALIAS)
         img.save(cache_path, 'JPEG')
 
-    return send_from_directory (cache_dir, filename + '_%d.jpg' % size)
+    return send_from_directory (cache_dir, filename + '_%s%d.jpg' % (mode, size))
 
 @app.route('/image/<path:filename>.html')
 def serve_image_wrapper(filename):
