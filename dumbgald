@@ -3,12 +3,17 @@
 
 import os
 import sys
+import argparse
 from flask import Flask, g, render_template, safe_join, send_from_directory
 from PIL import Image
 
 from dumbgal.database import TagStore
 
-app = Flask(__name__, instance_path=os.path.abspath(sys.argv[1]))
+parser = argparse.ArgumentParser(prog="dumbgalsh", description="Dumb Gallery support tool")
+parser.add_argument('-r', '--root', dest='root_dir', default='.', help='root data dir')
+args = parser.parse_args(sys.argv[1:])
+
+app = Flask(__name__, instance_path=os.path.abspath(args.root_dir))
 
 cache_dir = os.path.join(app.instance_path, 'cache')
 gallery_dir = os.path.join(app.instance_path, 'gallery')
