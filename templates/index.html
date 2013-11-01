@@ -4,7 +4,7 @@
   {% if tags %}
     <ul id="tags">
       {% for tag in tags %}
-        <li><a href="{{ url_for('tag_pages', tag=tag) }}">{{ tag }}</a></li>
+        <li><a href="{{ url_for('tag_pages', tag=tag.name) }}">{{ tag.name }} ({{ tag.count }})</a></li>
       {% endfor %}
     </ul>
   {% endif %}
