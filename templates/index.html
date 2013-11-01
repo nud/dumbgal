@@ -1,16 +1,21 @@
 {% extends "layout.html" %}
 
-{% block body %}
+{% block main %}
+  <ul id="thumbnails">
+    {% for file in files %}
+      <li><a href="{{ url_for('image_pages', filename=file) }}"><img src="{{ url_for('images', filename=file, size=300, mode='h') }}" alt=""></a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+
+{% block sidebar %}
   {% if tags %}
     <ul id="tags">
       {% for tag in tags %}
         <li><a href="{{ url_for('tag_pages', tag=tag.name) }}">{{ tag.name }} ({{ tag.count }})</a></li>
       {% endfor %}
     </ul>
+  {% else %}
+    <p><a href="/">Show all thumbnails</a></p>
   {% endif %}
-  <ul id="thumbnails">
-    {% for file in files %}
-      <li><a href="{{ url_for('image_pages', filename=file) }}"><img src="{{ url_for('images', filename=file, size=300, mode='h') }}" alt=""></a></li>
-    {% endfor %}
-  </ul>
 {% endblock %}

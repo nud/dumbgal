@@ -1,8 +1,11 @@
 {% extends "layout.html" %}
-{% block body %}
+{% block main %}
   <div id="box">
     <img class="big" src="{{ url_for('images', filename=filename, size=2000, mode='') }}">
   </div>
+{% endblock %}
+{% block sidebar %}
+  <p><a href="/">Show all thumbnails</a></p>
   <div id="image-tags">
     {% if tags %}
       <ul>
@@ -12,7 +15,7 @@
       </ul>
     {% endif %}
     <form method="post" action="{{ url_for('add_tag', filename=filename) }}">
-      <p><input type="text" name="tag"><input type="submit" value="+"></p>
+      <p><input type="text" name="tag" size="10"><input type="submit" value="+"></p>
     </form>
   </div>
 {% endblock %}

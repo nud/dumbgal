@@ -7,13 +7,8 @@ a {
   color: white;
 }
 
-#tags ul {
-  display: block;
-  text-align: center;
-}
-
-#tags li {
-  display: inline;
+#main {
+  margin-right: 250px;
 }
 
 #thumbnails ul {
@@ -27,12 +22,20 @@ a {
   float: left;
 }
 
+#sidebar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 210px;
+  padding: 20px;
+}
+
 #box {
   position: absolute;
   left: 10px;
   top: 10px;
   bottom: 10px;
-  right: 10px;
+  right: 260px;
   vertical-align: middle;
   text-align: center;
 }
@@ -40,11 +43,4 @@ a {
 #box img.big {
   max-width: 100%;
   max-height: 100%;
-}
-
-#image-tags {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 10px;
 }
