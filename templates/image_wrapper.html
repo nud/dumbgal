@@ -15,7 +15,15 @@
       </ul>
     {% endif %}
     <form method="post" action="{{ url_for('add_tag', filename=filename) }}">
-      <p><input type="text" name="tag" size="10"><input type="submit" value="+"></p>
+      <p>
+        <input type="text" name="tag" size="10" autocomplete="off" list="tags">
+        <datalist id="tags">
+          {% for tag in all_tags %}
+            <option value="{{ tag }}">
+          {% endfor %}
+        </datalist>
+        <input type="submit" value="+">
+      </p>
     </form>
   </div>
 {% endblock %}

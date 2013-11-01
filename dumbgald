@@ -56,8 +56,11 @@ def images(filename, size, mode):
 
 @app.route('/image/<path:filename>')
 def image_pages(filename):
-    tags = get_store().list_tags_for_image(filename)
-    return render_template('image_wrapper.html', filename=filename, tags=tags)
+    store = get_store()
+    tags = store.list_tags_for_image(filename)
+    all_tags = [tag['name'] for tag in store.list_all_tags() if tag['name'] not in tags]
+    return render_template('image_wrapper.html', filename=filename,
+                           tags=tags, all_tags=all_tags)
 
 @app.route('/image/<path:filename>/add-tag', methods=['POST'])
 def add_tag(filename):
