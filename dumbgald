@@ -5,12 +5,40 @@ import os
 import sys
 import argparse
 
-from dumbgal.webapp import setup_webapp
 
-parser = argparse.ArgumentParser(prog="dumbgalsh", description="Dumb Gallery support tool")
-parser.add_argument('-r', '--root', dest='root_dir', default='.', help='root data dir')
+def get_argument_parser():
+    parser = argparse.ArgumentParser(prog="dumbgalsh", description="Dumb Gallery support tool")
+    parser.add_argument('-r', '--root', dest='root_dir', default='.', help='root data dir')
 
-if __name__ == '__main__':
-    args = parser.parse_args(sys.argv[1:])
+    subparsers = parser.add_subparsers(help='subcommand')
+
+    subparser = subparsers.add_parser ('serve')
+    subparser.set_defaults(cmd='serve')
+
+    subparser = subparsers.add_parser('scan')
+    subparser.set_defaults(cmd='scan')
+
+    subparser = subparsers.add_parser('tag')
+    subparser.set_defaults(cmd='tag')
+    subparser.add_argument('image', help='the image filename')
+    subparser.add_argument('tag', help='the tag name')
+
+    return parser
+
+
+args = get_argument_parser().parse_args(sys.argv[1:])
+
+if args.cmd == 'serve':
+    from dumbgal.webapp import setup_webapp
     app = setup_webapp(os.path.abspath(args.root_dir), True)
     app.run()
+
+elif args.cmd == 'scan':
+    from dumbgal.scanner import scan_directory
+    scan_directory(os.path.abspath(args.root_dir))
+
+elif args.cmd == 'tag':
+    from dumbgal.database import TagStore
+    store = TagStore(os.path.join(args.root_dir, 'meta.db'))
+    store.add_tag(args.image, args.tag)
+    print("tag added.")
