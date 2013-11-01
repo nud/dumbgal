@@ -30,7 +30,13 @@ class TagStore(object):
         return [row[0] for row in self._query("SELECT filename FROM images ORDER BY filename")]
 
     def list_all_tags(self):
-        return [row[0] for row in self._query("SELECT name FROM tags ORDER BY name")]
+        results = self._query("""SELECT t.name
+                                 FROM image_tags a
+                                 LEFT JOIN tags t ON t.id = a.tag_id
+                                 GROUP BY t.id
+                                 HAVING COUNT(t.id) > 0
+                                 ORDER BY t.name""")
+        return [row[0] for row in results]
 
     def list_images_for_tag(self, tag):
         results = self._query("""SELECT i.filename
