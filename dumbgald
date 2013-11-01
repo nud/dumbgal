@@ -4,7 +4,8 @@
 import os
 import sys
 import argparse
-from flask import Flask, g, render_template, safe_join, send_from_directory
+from flask import Flask, g, render_template, safe_join, send_from_directory, \
+                 redirect, request, url_for
 from PIL import Image
 
 from dumbgal.database import TagStore
@@ -57,6 +58,11 @@ def images(filename, size, mode):
 def image_pages(filename):
     tags = get_store().list_tags_for_image(filename)
     return render_template('image_wrapper.html', filename=filename, tags=tags)
+
+@app.route('/image/<path:filename>/add-tag', methods=['POST'])
+def add_tag(filename):
+    get_store().add_tag(filename, request.form['tag'])
+    return redirect(url_for('image_pages', filename=filename))
 
 @app.route('/tag/<tag>')
 def tag_pages(tag):

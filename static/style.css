@@ -7,11 +7,20 @@ a {
   color: white;
 }
 
-ul {
+#tags ul {
+  display: block;
+  text-align: center;
+}
+
+#tags li {
+  display: inline;
+}
+
+#thumbnails ul {
   clear: both;
 }
 
-ul li {
+#thumbnails li {
   display: block;
   list-style-type: none;
   margin: 5px;
@@ -31,4 +40,11 @@ ul li {
 #box img.big {
   max-width: 100%;
   max-height: 100%;
+}
+
+#image-tags {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
 }

@@ -3,11 +3,16 @@
   <div id="box">
     <img class="big" src="{{ url_for('images', filename=filename, size=2000, mode='') }}">
   </div>
-  {% if tags %}
-    <ul>
-      {% for tag in tags %}
-        <li><a href="{{ url_for('tag_pages', tag=tag) }}">{{ tag }}</a></li>
-      {% endfor %}
-    </ul>
-  {% endif %}
+  <div id="image-tags">
+    {% if tags %}
+      <ul>
+        {% for tag in tags %}
+          <li><a href="{{ url_for('tag_pages', tag=tag) }}">{{ tag }}</a></li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <form method="post" action="{{ url_for('add_tag', filename=filename) }}">
+      <p><input type="text" name="tag"><input type="submit" value="+"></p>
+    </form>
+  </div>
 {% endblock %}

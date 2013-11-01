@@ -73,7 +73,7 @@ class TagStore(object):
             cur.execute('INSERT INTO tags (name) VALUES (?)', (tag,))
             tag_id = cur.lastrowid
 
-        cur.execute('INSERT INTO image_tags (image_id, tag_id) VALUES (?, ?)', (image_id, tag_id))
+        cur.execute('INSERT OR IGNORE INTO image_tags (image_id, tag_id) VALUES (?, ?)', (image_id, tag_id))
         self.conn.commit()
         cur.close()
 
