@@ -4,7 +4,7 @@
     {% block head %}
       <meta charset="utf-8">
       <title>{% block title %}Dumbgal{% endblock %}</title>
-      <link rel="stylesheet" href="{{ url_for('static_files', filename='style.css') }}" />
+      <link rel="stylesheet" href="{{ url_for('dumbgal.static_files', filename='style.css') }}" />
       {% block extrahead %}{% endblock %}
     {% endblock %}
   </head>
